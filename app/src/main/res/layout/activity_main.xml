@@ -62,4 +62,11 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
+    <TextView
+        android:id="@+id/cheatCountTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        tools:text="3 hints lest"/>
+
 </androidx.appcompat.widget.LinearLayoutCompat>

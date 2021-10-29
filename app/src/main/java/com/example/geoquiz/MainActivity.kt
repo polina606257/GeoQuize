@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nextButton: ImageButton
     private lateinit var prevButton: ImageButton
     private lateinit var questionTextView: TextView
+    private lateinit var cheatCountTextView: TextView
     private var answerMade: Boolean = false
     private var rightAnswer: Int = 0
     var percentCorrectAnswers: Int = 0
@@ -48,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         nextButton = findViewById(R.id.next_button)
         prevButton = findViewById(R.id.prev_button)
         questionTextView = findViewById(R.id.question_text_view)
+        cheatCountTextView = findViewById(R.id.cheatCountTextView)
 
         trueButton.setOnClickListener { view: View ->
             checkAnswer(true)
@@ -61,9 +63,9 @@ class MainActivity : AppCompatActivity() {
 
         cheatButton.setOnClickListener {
             val answerIsTrue = quizViewModel.currentQuestionAnswer
-            val intent = CheatActivity.newIntent(this, answerIsTrue)
+            val cheatCount = quizViewModel.cheatCount
+            val intent = CheatActivity.newIntent(this, answerIsTrue, cheatCount)
                 startActivityForResult(intent, REQUEST_CODE_CHEAT)
-           startActivityForResult(intent, REQUEST_CODE_CHEAT)
         }
 
         nextButton.setOnClickListener {
@@ -81,6 +83,16 @@ class MainActivity : AppCompatActivity() {
         updateQuestion()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(quizViewModel.cheatCount == 3) {
+            cheatButton.isEnabled = false
+            cheatCountTextView.text = "You cant cheat any more"
+        } else
+            cheatCountTextView.text = "You can cheat ${3 - quizViewModel.cheatCount} more times"
+
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -89,6 +101,7 @@ class MainActivity : AppCompatActivity() {
         }
         if(requestCode == REQUEST_CODE_CHEAT) {
             quizViewModel.isCheater = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false)?: false
+            quizViewModel.cheatCount = data?.getIntExtra(EXTRA_CHEAT_COUNT, 0)?: 0
         }
     }
 
